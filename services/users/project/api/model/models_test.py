@@ -1,4 +1,7 @@
-from project import db
+import datetime
+
+from manage import app
+from project import db, bcrypt
 
 
 class Account(db.Model):

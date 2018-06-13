@@ -7,51 +7,45 @@ from project import db, bcrypt
 
 
 class User(db.Model):
-    __tablename__ = 'tbl_account'
+    __tablename__ = 'tbl_user'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(255), nullable=False, unique=True)
+    d_name = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), nullable=False, unique=True)
-    phone_number = db.Column(db.String(16), nullable=True)
-    first_name = db.Column(db.String(128), nullable=False)
-    last_name = db.Column(db.String(128), nullable=False)
     status = db.Column(db.Integer, nullable=False, default=0)
+    coin = db.Column(db.DECIMAL, nullable=False, default=0)
+    exp = db.Column(db.INTEGER, nullable=False, default=0)
+    level = db.Column(db.INTEGER, nullable=False, default=0)
+    phone_number = db.Column(db.String(16), nullable=True)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
-    is_active = db.Column(db.Boolean, default=False, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
     registered_on = db.Column(db.DateTime, nullable=True)
     last_login = db.Column(db.DateTime, nullable=True)
+    account_type = db.Column(db.INTEGER, nullable=False, default=0)
+    type_extend = db.Column(db.INTEGER, nullable=False, default=0)
+    num_guide = db.Column(db.INTEGER, nullable=False, default=0)
 
-    def __init__(self, user_name, password, email, phone_number, first_name, last_name, status, is_admin, is_active):
+    def __init__(self, user_name, password, d_name, phone_number, is_active, is_admin, account_type):
         self.user_name = user_name
+        self.d_name = d_name
         self.password = bcrypt.generate_password_hash(
             password, os.getenv('BCRYPT_LOG_ROUNDS')
         ).decode()
-        self.email = email
         self.phone_number = phone_number
-        self.first_name = first_name
-        self.last_name = last_name
-        self.status = status
-        if is_active is None:
-            self.is_active = False
-        else:
-            self.is_active = is_active
+        self.is_active = is_active
+        self.is_admin = is_admin
         self.registered_on = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        if is_admin is None:
-            self.is_admin = False
-        else:
-            self.is_admin = is_admin
+        self.account_type = account_type
 
     def to_json(self):
         return {
             'id': self.id,
-            'username': self.user_name,
-            'email': self.email,
-            'active': self.is_active,
-            'admin': self.is_admin,
-            'phone_number': self.phone_number,
+            'user_name': self.user_name,
+            'd_name': self.d_name,
+            'level': self.level,
+            'exp': self.exp,
             'last_login': self.last_login,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
+            'registered_on': self.registered_on
         }
 
     def encode_auth_token(self, user_id):
@@ -76,7 +70,6 @@ class User(db.Model):
 
     @staticmethod
     def decode_auth_token(auth_token):
-
         """
         Validates the auth token
         :param auth_token:

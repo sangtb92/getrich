@@ -1,9 +1,9 @@
 import json
 import unittest
 
-from project.tests.base import BaseTestCase
 from project import db
-from project.api.models import User
+from project.api.model.models import User
+from project.tests.base import BaseTestCase
 
 
 def add_user(username, email):
@@ -83,7 +83,7 @@ class TestUserService(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertIn('fail', data['status'])
+            self.assertIn('400', data['status'])
             self.assertIn('Sorry. That email already exists.', data['message'])
 
     def test_single_user(self):
