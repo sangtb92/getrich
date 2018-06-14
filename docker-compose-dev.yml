@@ -25,17 +25,42 @@ services:
       context: ./services/users/project/db
       dockerfile: Dockerfile
     ports:
-      - 5435:5432
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-  nginx:
-    container_name: nginx
-    build:
-      context: ./services/nginx
-      dockerfile: Dockerfile
-    restart: always
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
+#  nginx:
+#    container_name: nginx
+#    build:
+#      context: ./services/nginx
+#      dockerfile: Dockerfile
+#    restart: always
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - users
+
+  postgrest:
+    image: postgrest/postgrest
     ports:
-      - 80:80
+      - "3000:3000"
+    links:
+      - users-db:users-db
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@users-db:5432/users_dev
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: postgres #In production this role should not be the same as the one used for the connection
     depends_on:
-      - users
+      - users-db
+    volumes:
+      - "./pgdata:/var/lib/postgresql/data"
+
+networks:
+  default:
+      external:
+          name: test

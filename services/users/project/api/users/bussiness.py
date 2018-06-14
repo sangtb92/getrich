@@ -51,7 +51,7 @@ def login(data):
                         'code': 200,
                         'message': 'login success',
                         # covert bytes to string
-                        'auth_token': auth_token.decode("utf-8"),
+                        'auth_token': auth_token,
                         'data': user.to_json()
                     }
                     user.last_login = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -60,7 +60,7 @@ def login(data):
         else:
             response_object = {
                 'code': 400,
-                'message': 'Login fail'
+                'message': 'User doesn\'t exist.'
             }
             return response_object
     except Exception as e:
