@@ -47,6 +47,18 @@ class UserLogin(Resource):
         return resp, resp.get('code')
 
 
+ns.route('/logout')
+class UserLogOut(Resource):
+    @api.expect(user_arguments)
+    @api.response('201', 'Create user succeeded')
+    def post(self):
+        """
+        return result user register
+        """
+        resp = create_user(user_arguments.parse_args(request))
+        return resp, resp.get('code')
+
+
 @ns.route('/<int:user_id>')
 class GetUser(Resource):
     @api.expect(user_arguments)
