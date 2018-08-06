@@ -1,6 +1,6 @@
 # Microservices with Docker, Flask, and React
 
-[![Build Status](https://travis-ci.org/sangtb92/ciand.svg?branch=master)](https://travis-ci.org/sangtb92/ciand)
+[![Build Status](https://travis-ci.org/sangtb92/getrich.svg?branch=master)](https://travis-ci.org/sangtb92/getrich/builds)
 
 
 ## Up services
