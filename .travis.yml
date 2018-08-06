@@ -21,7 +21,7 @@ notifications:
       - sangnd@vnext.vn
     on_success: never # default: change
     on_failure: always # default: always
-  slack: ci-travis:dNiB0BilyfKSm8cCCyWX8UPq
+  slack: ci-travis:DVmoGFW8BCN3iMzKZxw48wE9
 
 
 after_script:

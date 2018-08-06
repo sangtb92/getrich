@@ -45,9 +45,7 @@ class User(db.Model):
             'user_name': self.user_name,
             'd_name': self.d_name,
             'level': self.level,
-            'exp': self.exp,
-            'last_login': dumps(self.last_login, default=json_serial),
-            'registered_on': dumps(self.registered_on, default=json_serial)
+            'exp': self.exp
         }
 
     def encode_auth_token(self, user_id):
