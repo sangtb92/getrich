@@ -5,7 +5,6 @@ from json import dumps
 
 import jwt
 from project import db, bcrypt
-from project.api.common.utils import json_serial
 
 
 class User(db.Model):
