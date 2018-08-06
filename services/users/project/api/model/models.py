@@ -1,9 +1,11 @@
 import time
 import datetime
 import os
+from json import dumps
 
 import jwt
 from project import db, bcrypt
+from project.api.common.utils import json_serial
 
 
 class User(db.Model):
@@ -37,17 +39,6 @@ class User(db.Model):
         self.registered_on = datetime.datetime.now()
         self.account_type = account_type
 
-    def to_json_login(self):
-        return {
-            'id': self.id,
-            'user_name': self.user_name,
-            'd_name': self.d_name,
-            'level': self.level,
-            'exp': self.exp,
-            'last_login': self.last_login,
-            'registered_on': self.registered_on
-        }
-
     def to_json(self):
         return {
             'id': self.id,
@@ -55,8 +46,8 @@ class User(db.Model):
             'd_name': self.d_name,
             'level': self.level,
             'exp': self.exp,
-            'last_login': self.last_login.strftime("%Y-%m-%d %H:%M:%S"),
-            'registered_on': self.registered_on.strftime("%Y-%m-%d %H:%M:%S")
+            'last_login': dumps(self.last_login, default=json_serial),
+            'registered_on': dumps(self.registered_on, default=json_serial)
         }
 
     def encode_auth_token(self, user_id):

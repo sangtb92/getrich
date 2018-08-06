@@ -51,7 +51,7 @@ def login(data):
                         'message': 'success',
                         # covert bytes to string
                         'auth_token': auth_token.decode(),
-                        'data': user.to_json_login()
+                        'data': user.to_json()
                     }
                     user.last_login = datetime.datetime.now()
                     db.session.commit()

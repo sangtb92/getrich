@@ -15,5 +15,12 @@ script:
   - docker-compose -f docker-compose-dev.yml run users python manage.py test
   - docker-compose -f docker-compose-dev.yml run users flake8 project
 
+notifications:
+  email:
+    recipients:
+      - sangnd@vnext.vn
+    on_success: never # default: change
+    on_failure: always # default: always
+
 after_script:
   - docker-compose -f docker-compose-dev.yml down

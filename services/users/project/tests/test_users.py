@@ -16,28 +16,27 @@ def add_user(username, email):
 class TestUserService(BaseTestCase):
     """Test for the Users Service."""
 
-    def test_users(self):
+    def test_users_pingpong(self):
         """Ensure the /ping route behaves correctly."""
-        res = self.client.get('/users/ping')
+        res = self.client.get('/api/v1/users/ping')
         data = json.loads(res.data.decode())
         self.assertTrue(res.status_code, 200)
-        self.assertIn('pong', data['message'])
-        self.assertIn('success', data['status'])
 
     def test_add_user(self):
         with self.client:
             response = self.client.post(
-                '/users',
+                '/api/v1/users/register',
                 data=json.dumps({
-                    'username': 'michael',
-                    'email': 'sangnd.it@gmail.com'
+                    'user_name': 'sangnd',
+                    'd_name': 'Nguyen Sang',
+                    'password': 'Ali33team@#',
+                    'phone': '0985375631'
                 }),
                 content_type='application/json',
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
-            self.assertIn('sangnd.it@gmail.com was added!', data['message'])
-            self.assertIn('success', data['status'])
+            self.assertIn('message', data['message'])
 
     def test_add_user_invalid_json(self):
         with self.client:
@@ -66,25 +65,29 @@ class TestUserService(BaseTestCase):
     def test_add_user_duplicate_email(self):
         with self.client:
             self.client.post(
-                '/users',
+                '/api/v1/users/register',
                 data=json.dumps({
-                    'username': 'michael',
-                    'email': 'sangnd.it@gmail.com'
+                    'user_name': 'sangnd',
+                    'd_name': 'Nguyen Sang',
+                    'password': 'Ali33team@#',
+                    'phone': '0985375631'
                 }),
                 content_type='application/json'
             )
             response = self.client.post(
-                '/users',
+                '/api/v1/users/register',
                 data=json.dumps({
-                    'username': 'michael',
-                    'email': 'sangnd.it@gmail.com'
+                    'user_name': 'sangnd',
+                    'd_name': 'Nguyen Sang',
+                    'password': 'Ali33team@#',
+                    'phone': '0985375631'
                 }),
                 content_type='application/json'
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertIn('400', data['status'])
-            self.assertIn('Sorry. That email already exists.', data['message'])
+            self.assertIn('400', data['code'])
+            self.assertIn('user already existed.', data['message'])
 
     def test_single_user(self):
         user = add_user('sangnd', 'sangnd@vnext.vn')

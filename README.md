@@ -19,3 +19,16 @@ $ docker-compose -f docker-compose-dev.yml run users python manage.py db init
 $ docker-compose -f docker-compose-dev.yml run users python manage.py db migrate
 $ docker-compose -f docker-compose-dev.yml run users python manage.py db upgrade
 ```
+
+
+## Run unit 
+```
+$ docker-compose -f docker-compose-dev.yml run users python manage.py test
+$ docker-compose -f docker-compose-dev.yml run users flake8 project
+
+```
+
+## Build single service
+```
+$ docker-compose -f docker-compose-dev.yml up -d --build service
+```
