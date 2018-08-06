@@ -9,3 +9,6 @@ user_arguments.add_argument('phone', type=str, required=True, help='User\'s phon
 user_login_arguments = reqparse.RequestParser()
 user_login_arguments.add_argument('user_name', type=str, required=True, help='User name')
 user_login_arguments.add_argument('password', type=str, required=True, help='Password')
+
+auth_header_arguments = reqparse.RequestParser()
+auth_header_arguments.add_argument('Authorization', type=str, required=True, help='Authorization')

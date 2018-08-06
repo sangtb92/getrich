@@ -1,8 +1,7 @@
-import datetime, time
+import datetime
 
-from project.api.model.models import User
+from project.api.model.models import User, BlacklistToken
 from project import db, bcrypt
-from project.api.common.constant import BAD_REQUEST
 
 
 def create_user(data):
@@ -13,13 +12,14 @@ def create_user(data):
     try:
         user = User.query.filter_by(user_name=user_name).first()
         if not user:
-            db.session.add(
-                User(user_name=user_name, password=password, d_name=d_name, phone_number=phone, is_active=True,
-                     is_admin=True, account_type=0))
+            new_user = User(user_name=user_name, password=password, d_name=d_name, phone_number=phone, is_active=True,
+                            is_admin=False, account_type=0)
+            db.session.add(new_user)
             db.session.commit()
             response_object = {
                 'code': 201,
-                'message': 'create succeeded.'
+                'message': 'success',
+                'data': new_user.to_json()
             }
             return response_object
         else:
@@ -45,16 +45,15 @@ def login(data):
         if user:
             if bcrypt.check_password_hash(user.password, password):
                 auth_token = user.encode_auth_token(user_id=user.id)
-                print(auth_token)
                 if auth_token:
                     response_object = {
                         'code': 200,
-                        'message': 'login success',
+                        'message': 'success',
                         # covert bytes to string
-                        'auth_token': auth_token,
-                        'data': user.to_json()
+                        'auth_token': auth_token.decode(),
+                        'data': user.to_json_login()
                     }
-                    user.last_login = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                    user.last_login = datetime.datetime.now()
                     db.session.commit()
                     return response_object
         else:
@@ -70,3 +69,110 @@ def login(data):
             'message': e.__str__()
         }
         return response_object
+
+
+def get_list_user(data):
+    auth_header = data.headers.get('Authorization')
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        if not isinstance(resp, str):
+            users = User.query.all()
+            user_arr = []
+            for u in users:
+                user_arr.append(u.to_json())
+            response_object = {
+                'code': 200,
+                'status': 'success',
+                'data': user_arr
+            }
+        else:
+            response_object = {
+                'code': 400,
+                'status': 'fail',
+                'message': resp
+            }
+    else:
+        response_object = {
+            'code': 400,
+            'message': 'User doesn\'t exist.',
+            'auth_token': auth_token
+        }
+    return response_object
+
+
+def get_user(data):
+    auth_header = data.headers.get('Authorization')
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        if not isinstance(resp, str):
+            user_id = data.headers.get('user_id')
+            user = User.query.filter_by(id=user_id).first()
+            response_object = {
+                'code': 200,
+                'status': 'success',
+                'data': user.to_json()
+            }
+        else:
+            response_object = {
+                'code': 400,
+                'status': 'fail',
+                'message': resp
+            }
+    else:
+        response_object = {
+            'code': 400,
+            'message': 'User doesn\'t exist.'
+        }
+    return response_object
+
+
+def logout(data):
+    # get auth token
+    auth_header = data.headers.get('Authorization')
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+    if auth_token:
+        resp = User.decode_auth_token(auth_token)
+        if not isinstance(resp, str):
+            # mark the token as blacklisted
+            blacklist_token = BlacklistToken(token=auth_token)
+            try:
+                # insert the token
+                db.session.add(blacklist_token)
+                db.session.commit()
+                response_object = {
+                    'code': 200,
+                    'status': 'success',
+                    'message': 'Successfully logged out.'
+                }
+            except Exception as e:
+                response_object = {
+                    'code': 200,
+                    'status': 'fail',
+                    'message': e
+                }
+        else:
+            response_object = {
+                'code': 401,
+                'status': 'fail',
+                'message': resp
+            }
+    else:
+        response_object = {
+            'code': 403,
+            'status': 'fail',
+            'message': 'Provide a valid auth token.'
+        }
+    return response_object

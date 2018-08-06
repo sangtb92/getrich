@@ -34,10 +34,10 @@ class User(db.Model):
         self.phone_number = phone_number
         self.is_active = is_active
         self.is_admin = is_admin
-        self.registered_on = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        self.registered_on = datetime.datetime.now()
         self.account_type = account_type
 
-    def to_json(self):
+    def to_json_login(self):
         return {
             'id': self.id,
             'user_name': self.user_name,
@@ -46,6 +46,17 @@ class User(db.Model):
             'exp': self.exp,
             'last_login': self.last_login,
             'registered_on': self.registered_on
+        }
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_name': self.user_name,
+            'd_name': self.d_name,
+            'level': self.level,
+            'exp': self.exp,
+            'last_login': self.last_login.strftime("%Y-%m-%d %H:%M:%S"),
+            'registered_on': self.registered_on.strftime("%Y-%m-%d %H:%M:%S")
         }
 
     def encode_auth_token(self, user_id):
