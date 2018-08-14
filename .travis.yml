@@ -9,6 +9,7 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 before_script:
+  - docker network create test
   - docker-compose -f docker-compose-dev.yml up --build -d
 
 script:
