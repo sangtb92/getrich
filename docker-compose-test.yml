@@ -18,51 +18,6 @@ services:
         - 8500
       dns:
         - 127.0.0.1
-  users:
-    container_name: users
-    build:
-      context: ./services/users
-      dockerfile: Dockerfile-dev
-    volumes:
-      - './services/users:/usr/src/app'
-    ports:
-      - 5000:5000
-    environment:
-      - FLASK_DEBUG=1
-      - APP_SETTINGS=project.config.DevelopmentConfig
-      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
-      - SECRET_KEY=^t(2qwhx+^424$ys-+bggd#cw+rcxw%2u@i!+*6rky7)+54*9#
-    depends_on:
-      - users-db
-    links:
-      - users-db
-    healthcheck:
-      test: ["CMD-SHELL", "curl -I -s -L http://127.0.0.1:5000 || exit 1"]
-      interval: 5s
-      retries: 10
-
-  users2:
-    container_name: users2
-    build:
-      context: ./services/users2
-      dockerfile: Dockerfile-dev
-    volumes:
-      - './services/users2:/usr/src/app'
-    environment:
-      - FLASK_DEBUG=1
-      - APP_SETTINGS=project.config.DevelopmentConfig
-      - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
-      - SECRET_KEY=^t(2qwhx+^424$ys-+bggd#cw+rcxw%2u@i!+*6rky7)+54*9#
-    depends_on:
-      - users-db
-    links:
-      - users-db
-    healthcheck:
-      test: ["CMD-SHELL", "curl -I -s -L http://127.0.0.1:5000 || exit 1"]
-      interval: 5s
-      retries: 10
 
   users-db:
     container_name: users-db
@@ -78,6 +33,21 @@ services:
         interval: 30s
         timeout: 30s
         retries: 3
+  todo:
+    container_name: todo
+    build:
+      context: services/todo
+      dockerfile: Dockerfile-dev
+    volumes:
+      - './services/todo:/usr/src/app'
+    ports:
+      - 5000:5000
+    expose:
+      - 5000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I -s -L http://127.0.0.1:5000/todos/ || exit 1"]
+      interval: 5s
+      retries: 10
 
   #http://postgrest.org/en/v5.1/
   postgrest:

@@ -1,6 +1,8 @@
+.gitignore
 __pycache__
 env
 .gitignore
 .idea/
 htmlcov/
 migrations/
+pgdata/

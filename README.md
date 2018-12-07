@@ -30,5 +30,5 @@ $ docker-compose -f docker-compose-dev.yml run users flake8 project
 
 ## Build single service
 ```
-$ docker-compose -f docker-compose-dev.yml up -d --build service
+$ docker-compose -f docker-compose-dev.yml up -d --build service-name
 ```
